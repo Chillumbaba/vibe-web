@@ -9,7 +9,7 @@ services:
       echo "=== Installing and building client ==="
       cd vibe-web/client
       npm install
-      CI=false react-scripts build
+      CI=false npm run build
       cd ../..
       
       echo "=== Preparing client build ==="
