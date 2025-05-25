@@ -1,4 +1,4 @@
-import express from 'express';
+import express, { Request, Response } from 'express';
 import mongoose from 'mongoose';
 import cors from 'cors';
 import dotenv from 'dotenv';
@@ -29,7 +29,7 @@ mongoose.connect(MONGODB_URI)
   });
 
 // Basic route for testing
-app.get('/', (req, res) => {
+app.get('/', (req: Request, res: Response) => {
   res.json({ message: 'Welcome to Vibe Web API' });
 });
 
