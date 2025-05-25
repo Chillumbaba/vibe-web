@@ -7,14 +7,21 @@ services:
       npm install
       
       echo "=== Installing and building client ==="
-      (cd vibe-web/client && npm install && CI=false npm run build)
+      CURRENT_DIR=$(pwd)
+      cd vibe-web/client
+      npm install
+      CI=false npm run build
+      cd "$CURRENT_DIR"
       
       echo "=== Preparing client build ==="
       mkdir -p dist/public
       cp -r vibe-web/client/build/* dist/public/
       
       echo "=== Building server ==="
-      (cd server && npm install && tsc)
+      cd server
+      npm install
+      tsc
+      cd "$CURRENT_DIR"
       
       echo "=== Final build structure ==="
       echo "Contents of dist:"
