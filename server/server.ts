@@ -43,41 +43,39 @@ console.log('__dirname:', __dirname);
 
 // In production, serve static files from the React app
 if (process.env.NODE_ENV === 'production') {
-  // The client build should be in the dist/client directory
-  const clientBuildPath = path.join(__dirname, 'client');
-  
-  console.log('Looking for client build at:', clientBuildPath);
-  
-  if (fs.existsSync(clientBuildPath)) {
-    console.log('Found client build directory');
-    console.log('Contents of client build directory:');
+  const publicPath = path.join(__dirname, 'public');
+  console.log('Looking for static files in:', publicPath);
+
+  if (fs.existsSync(publicPath)) {
+    console.log('Static files directory found');
     try {
-      const files = fs.readdirSync(clientBuildPath);
-      console.log(files);
-      
+      const files = fs.readdirSync(publicPath);
+      console.log('Contents of public directory:', files);
+
       // Serve static files
-      app.use(express.static(clientBuildPath));
-      
+      app.use(express.static(publicPath));
+
       // Serve index.html for all non-API routes
       app.get('*', (req: Request, res: Response) => {
         if (!req.path.startsWith('/api')) {
-          const indexPath = path.join(clientBuildPath, 'index.html');
+          const indexPath = path.join(publicPath, 'index.html');
           if (fs.existsSync(indexPath)) {
             res.sendFile(indexPath);
           } else {
-            console.error('index.html not found in', clientBuildPath);
+            console.error('index.html not found');
             res.status(404).send('Frontend not found');
           }
         }
       });
     } catch (error) {
-      console.error('Error reading client build directory:', error);
+      console.error('Error serving static files:', error);
+      throw error;
     }
   } else {
-    console.error('Client build directory not found at:', clientBuildPath);
+    console.error('Static files directory not found at:', publicPath);
     app.get('*', (req: Request, res: Response) => {
       if (!req.path.startsWith('/api')) {
-        res.status(404).send('Frontend not found. Build directory not found.');
+        res.status(404).send('Frontend not found');
       }
     });
   }

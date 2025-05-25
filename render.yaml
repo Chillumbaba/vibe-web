@@ -3,44 +3,29 @@ services:
     name: vibe-web
     env: node
     buildCommand: |
-      echo "=== Starting build process ==="
-      echo "Initial directory structure:"
-      pwd
-      ls -la
+      echo "=== Installing dependencies ==="
+      npm install
       
-      echo "\n=== Building client ==="
-      # Build the client
+      echo "=== Building client ==="
       cd vibe-web/client
-      echo "In client directory:"
-      pwd
       npm install
       CI=false npm run build
-      echo "Client build output:"
-      ls -la build
-      
-      echo "\n=== Setting up build directory ==="
-      # Move back to root and create the build directory
       cd ../..
-      mkdir -p dist/client
-      echo "Copying client build to dist/client..."
-      cp -r vibe-web/client/build/* dist/client/
-      echo "Copied client build. Contents of dist/client:"
-      ls -la dist/client
       
-      echo "\n=== Building server ==="
-      # Build the server
-      npm install
-      npm run build
-      echo "Server build output:"
-      ls -la dist
+      echo "=== Preparing client build ==="
+      # Create the dist directory if it doesn't exist
+      mkdir -p dist/public
+      # Copy the client build to where the server expects it
+      cp -r vibe-web/client/build/* dist/public/
       
-      echo "\n=== Final directory structure ==="
-      pwd
-      ls -la
-      echo "\nContents of dist directory:"
+      echo "=== Building server ==="
+      npm run build:server
+      
+      echo "=== Final build structure ==="
+      echo "Contents of dist:"
       ls -la dist
-      echo "\nContents of dist/client directory:"
-      ls -la dist/client || echo "dist/client not found"
+      echo "Contents of dist/public:"
+      ls -la dist/public
     startCommand: npm start
     envVars:
       - key: NODE_ENV

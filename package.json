@@ -1,14 +1,13 @@
 {
-  "name": "vibe-web-server",
+  "name": "vibe-web",
   "version": "1.0.0",
-  "description": "Backend server for Vibe Web application",
-  "main": "dist/server.js",
+  "description": "Vibe Web Application",
   "scripts": {
+    "build:client": "cd vibe-web/client && npm install && npm run build",
+    "build:server": "tsc",
+    "build": "npm run build:client && npm run build:server",
     "start": "node dist/server.js",
-    "dev": "ts-node-dev --respawn --transpile-only server/server.ts",
-    "build": "npm run clean && tsc",
-    "clean": "rm -rf dist",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "dev": "ts-node-dev --respawn --transpile-only server/server.ts"
   },
   "dependencies": {
     "@types/bcryptjs": "^2.4.2",
