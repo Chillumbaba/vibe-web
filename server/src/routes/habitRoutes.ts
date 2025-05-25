@@ -1,11 +1,11 @@
-import express from 'express';
+import express, { Request, Response } from 'express';
 import { auth } from '../middleware/auth';
 import { Habit } from '../models/Habit';
 
 const router = express.Router();
 
 // Get user's habit data
-router.get('/', auth, async (req, res) => {
+router.get('/', auth, async (req: Request, res: Response) => {
   try {
     const habit = await Habit.findOne({ userId: req.user._id });
     if (!habit) {
@@ -18,7 +18,7 @@ router.get('/', auth, async (req, res) => {
 });
 
 // Create or update rules
-router.post('/rules', auth, async (req, res) => {
+router.post('/rules', auth, async (req: Request, res: Response) => {
   try {
     const { rules } = req.body;
     let habit = await Habit.findOne({ userId: req.user._id });
@@ -41,7 +41,7 @@ router.post('/rules', auth, async (req, res) => {
 });
 
 // Add or update entry
-router.post('/entries', auth, async (req, res) => {
+router.post('/entries', auth, async (req: Request, res: Response) => {
   try {
     const { date, values } = req.body;
     let habit = await Habit.findOne({ userId: req.user._id });
@@ -71,7 +71,7 @@ router.post('/entries', auth, async (req, res) => {
 });
 
 // Get stats for a time period
-router.get('/stats', auth, async (req, res) => {
+router.get('/stats', auth, async (req: Request, res: Response) => {
   try {
     const { startDate, endDate } = req.query;
     const habit = await Habit.findOne({ userId: req.user._id });

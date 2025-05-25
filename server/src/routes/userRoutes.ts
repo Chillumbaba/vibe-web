@@ -1,4 +1,4 @@
-import express from 'express';
+import express, { Request, Response } from 'express';
 import jwt from 'jsonwebtoken';
 import { User } from '../models/User';
 import { auth } from '../middleware/auth';
@@ -6,7 +6,7 @@ import { auth } from '../middleware/auth';
 const router = express.Router();
 
 // Register
-router.post('/register', async (req, res) => {
+router.post('/register', async (req: Request, res: Response) => {
   try {
     const { email, password, name } = req.body;
     const existingUser = await User.findOne({ email });
@@ -31,7 +31,7 @@ router.post('/register', async (req, res) => {
 });
 
 // Login
-router.post('/login', async (req, res) => {
+router.post('/login', async (req: Request, res: Response) => {
   try {
     const { email, password } = req.body;
     const user = await User.findOne({ email });
@@ -58,7 +58,7 @@ router.post('/login', async (req, res) => {
 });
 
 // Get user profile
-router.get('/profile', auth, async (req, res) => {
+router.get('/profile', auth, async (req: Request, res: Response) => {
   try {
     res.json(req.user);
   } catch (error) {
