@@ -3,32 +3,40 @@ services:
     name: vibe-web
     env: node
     buildCommand: |
+      # Install root dependencies
       echo "=== Installing root dependencies ==="
       npm install
       
-      echo "=== Installing and building client ==="
-      CURRENT_DIR=$(pwd)
+      # Build client
+      echo "=== Building client ==="
       cd vibe-web/client
+      echo "Installing client dependencies..."
       npm install
-      CI=false npm run build
-      cd "$CURRENT_DIR"
+      echo "Building client..."
+      CI=false ./node_modules/.bin/react-scripts build
+      cd ../..
       
+      # Prepare client build directory
       echo "=== Preparing client build ==="
       mkdir -p dist/public
       cp -r vibe-web/client/build/* dist/public/
       
+      # Build server
       echo "=== Building server ==="
       cd server
+      echo "Installing server dependencies..."
       npm install
-      tsc
-      cd "$CURRENT_DIR"
+      echo "Building server..."
+      ../node_modules/.bin/tsc
+      cd ..
       
+      # Verify build
       echo "=== Final build structure ==="
       echo "Contents of dist:"
       ls -la dist
       echo "Contents of dist/public:"
       ls -la dist/public
-    startCommand: npm start
+    startCommand: node dist/server.js
     envVars:
       - key: NODE_ENV
         value: production
