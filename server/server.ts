@@ -35,14 +35,13 @@ mongoose.connect(MONGODB_URI)
 app.use('/api/users', userRouter);
 app.use('/api/habits', habitRouter);
 
-// Remove the welcome message route since we're serving the frontend
 // Serve static files from the React app
-app.use(express.static(path.join(__dirname, '../vibe-web/client/build')));
+app.use(express.static(path.join(__dirname, '../../vibe-web/client/build')));
 
 // The "catchall" handler: for any request that doesn't
 // match one above, send back React's index.html file.
 app.get('*', (req: Request, res: Response) => {
-  res.sendFile(path.join(__dirname, '../vibe-web/client/build/index.html'));
+  res.sendFile(path.join(__dirname, '../../vibe-web/client/build/index.html'));
 });
 
 const PORT = process.env.PORT || 5000;
