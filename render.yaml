@@ -4,9 +4,19 @@ services:
     env: node
     buildCommand: |
       echo "Current directory: $PWD"
-      cd vibe-web/client && npm install && npm run build && cd ../..
-      echo "Building client complete, back in: $PWD"
-      ls -la vibe-web/client/build
+      # Build the client
+      cd vibe-web/client && npm install && npm run build
+      echo "Client build complete"
+      ls -la build
+      
+      # Copy client build to the location server expects
+      mkdir -p ../../client
+      cp -r build ../../client/
+      cd ../..
+      echo "Copied client build to ./client/build"
+      ls -la client/build
+      
+      # Build the server
       npm install
       npm run build
       echo "Server build complete"
