@@ -5,19 +5,22 @@ services:
     buildCommand: |
       # Install root dependencies
       echo "=== Installing root dependencies ==="
-      npm install
+      npm install --production=false
       
       # Build client
       echo "=== Building client ==="
       cd vibe-web/client
       echo "Installing client dependencies..."
-      npm install
+      npm install --production=false
       echo "Building client..."
-      CI=false ./node_modules/.bin/react-scripts build
+      export NODE_ENV=production
+      export CI=false
+      npx react-scripts build
       cd ../..
       
       # Prepare client build directory
       echo "=== Preparing client build ==="
+      rm -rf dist
       mkdir -p dist/public
       cp -r vibe-web/client/build/* dist/public/
       
@@ -25,9 +28,9 @@ services:
       echo "=== Building server ==="
       cd server
       echo "Installing server dependencies..."
-      npm install
+      npm install --production=false
       echo "Building server..."
-      ../node_modules/.bin/tsc
+      npx tsc
       cd ..
       
       # Verify build
@@ -37,6 +40,12 @@ services:
       echo "Contents of dist/public:"
       ls -la dist/public
     startCommand: node dist/server.js
+    buildFilter:
+      paths:
+        - package.json
+        - package-lock.json
+        - vibe-web/client/**
+        - server/**
     envVars:
       - key: NODE_ENV
         value: production

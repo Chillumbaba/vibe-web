@@ -3,6 +3,7 @@
   "version": "1.0.0",
   "description": "Vibe Web Application",
   "scripts": {
+    "build": "echo 'Using render.yaml buildCommand instead'",
     "start": "node dist/server.js",
     "dev": "ts-node-dev --respawn --transpile-only server/server.ts"
   },
