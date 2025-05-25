@@ -43,14 +43,37 @@ console.log('__dirname:', __dirname);
 
 // In production, serve static files from the React app
 if (process.env.NODE_ENV === 'production') {
-  const clientBuildPath = path.join(process.cwd(), 'vibe-web/client/build');
-  console.log('Looking for client build at:', clientBuildPath);
-  
-  // Check if the build directory exists
-  if (fs.existsSync(clientBuildPath)) {
-    console.log('Client build directory found');
+  // Try multiple possible locations for the client build
+  const possibleBuildPaths = [
+    path.join(process.cwd(), 'client/build'),
+    path.join(process.cwd(), 'vibe-web/client/build'),
+    path.join(__dirname, '../client/build'),
+    path.join(__dirname, '../vibe-web/client/build')
+  ];
+
+  console.log('Checking possible build paths:');
+  possibleBuildPaths.forEach(path => console.log('- ' + path));
+
+  // Find the first valid build path
+  const clientBuildPath = possibleBuildPaths.find(p => {
+    const exists = fs.existsSync(p);
+    console.log(`${p} exists: ${exists}`);
+    return exists;
+  });
+
+  if (clientBuildPath) {
+    console.log('Found client build at:', clientBuildPath);
     app.use(express.static(clientBuildPath));
-    
+
+    // List the contents of the build directory
+    try {
+      console.log('Contents of build directory:');
+      const files = fs.readdirSync(clientBuildPath);
+      console.log(files);
+    } catch (error) {
+      console.error('Error listing build directory:', error);
+    }
+
     // Serve index.html for all non-API routes
     app.get('*', (req: Request, res: Response) => {
       if (!req.path.startsWith('/api')) {
@@ -64,16 +87,12 @@ if (process.env.NODE_ENV === 'production') {
       }
     });
   } else {
-    console.error('Client build directory not found at:', clientBuildPath);
-    // List parent directory contents for debugging
-    try {
-      const parentDir = path.dirname(clientBuildPath);
-      console.log('Contents of', parentDir + ':');
-      const files = fs.readdirSync(parentDir);
-      console.log(files);
-    } catch (error) {
-      console.error('Error listing parent directory:', error);
-    }
+    console.error('No valid client build directory found');
+    app.get('*', (req: Request, res: Response) => {
+      if (!req.path.startsWith('/api')) {
+        res.status(404).send('Frontend not found. Build directory not found in any of the expected locations.');
+      }
+    });
   }
 }
 

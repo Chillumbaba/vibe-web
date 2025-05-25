@@ -5,6 +5,8 @@ services:
     buildCommand: |
       echo "Starting build process..."
       echo "Current directory: $PWD"
+      echo "Directory contents:"
+      ls -la
       
       # Clean up any previous builds
       rm -rf dist
@@ -16,7 +18,13 @@ services:
       npm run build
       echo "Client build complete. Contents of build directory:"
       ls -la build
+      
+      # Move the client build to where the server expects it
       cd ../..
+      mkdir -p client/build
+      cp -r vibe-web/client/build/* client/build/
+      echo "Copied client build. Contents of client/build:"
+      ls -la client/build
       
       # Build the server
       echo "Building server..."
@@ -25,11 +33,11 @@ services:
       echo "Server build complete. Contents of dist directory:"
       ls -la dist
       
-      # Verify the final structure
-      echo "Final directory structure:"
+      # Show final directory structure
+      echo "Final directory structure at root:"
       ls -la
-      echo "vibe-web/client/build contents:"
-      ls -la vibe-web/client/build
+      echo "Verifying client build location:"
+      ls -la client/build || echo "client/build not found"
     startCommand: npm start
     envVars:
       - key: NODE_ENV
