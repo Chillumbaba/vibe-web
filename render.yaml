@@ -3,8 +3,8 @@ services:
     name: vibe-web
     env: node
     buildCommand: |
+      cd client && npm install && npm run build && cd ..
       npm install
-      cd vibe-web/client && npm install && npm run build && cd ../..
       npm run build
     startCommand: npm start
     envVars:
