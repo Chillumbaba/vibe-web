@@ -1,84 +1,76 @@
-# Vibe Web Application
+# A New Beginning
 
-A full-stack web application built with React (frontend) and Node.js/Express (backend) that helps users track and manage their daily activities and goals.
+A simple web application that allows users to save text entries to a MongoDB database. Built with React (frontend) and Node.js/Express (backend).
 
-## Features
+## Project Structure
 
-- User authentication and authorization
-- Daily activity tracking
-- Progress visualization
-- MongoDB Atlas integration for data persistence
-- RESTful API endpoints
-- Modern, responsive UI
+This is a monorepo containing:
+- `packages/frontend`: React frontend application
+- `packages/backend`: Node.js/Express backend application
 
-## Tech Stack
+## Prerequisites
 
-### Frontend
-- React
-- TypeScript
-- Modern CSS
-
-### Backend
-- Node.js
-- Express
-- MongoDB Atlas
-- JWT Authentication
-
-## Getting Started
-
-### Prerequisites
-- Node.js v14 or higher
+- Node.js (v14 or higher)
+- npm
 - MongoDB Atlas account
-- npm or yarn
 
-### Installation
+## Setup
 
 1. Clone the repository
-```bash
-git clone https://github.com/krishnan.paddy/vibe-web.git
-cd vibe-web
-```
+2. Install dependencies:
+   ```bash
+   npm install
+   ```
 
-2. Install dependencies
-```bash
-# Install backend dependencies
-cd server
-npm install
+3. Setup MongoDB Atlas:
+   - Create a MongoDB Atlas account
+   - Create a new cluster
+   - Get your connection string
+   - Create a `.env` file in `packages/backend` with:
+     ```
+     PORT=3001
+     MONGODB_URI=your_mongodb_atlas_uri_here
+     ```
 
-# Install frontend dependencies
-cd ../client
-npm install
-```
+4. Start the development servers:
+   ```bash
+   # Start both frontend and backend
+   npm start
+   
+   # Or start them separately:
+   npm run start:frontend
+   npm run start:backend
+   ```
 
-3. Set up environment variables
-Create a `.env` file in the server directory with the following variables:
-```
-PORT=5000
-MONGODB_URI=your_mongodb_uri
-JWT_SECRET=your_jwt_secret
-NODE_ENV=development
-```
+## Development
 
-4. Start the application
-```bash
-# Start backend server
-cd server
-npm start
+- Frontend runs on: http://localhost:3000
+- Backend runs on: http://localhost:3001
 
-# Start frontend (in a new terminal)
-cd client
-npm start
-```
+## Deployment
 
-## API Endpoints
+### Render Deployment
 
-- `GET /api/health` - Health check endpoint
-- More endpoints coming soon...
+1. Create a new Web Service on Render
+2. Connect your GitHub repository
+3. Configure the build settings:
+   - Build Command: `npm install && npm run build`
+   - Start Command: `npm start`
+4. Add environment variables:
+   - `PORT`
+   - `MONGODB_URI`
 
-## Contributing
+## Technologies Used
 
-Pull requests are welcome. For major changes, please open an issue first to discuss what you would like to change.
+- Frontend:
+  - React
+  - TypeScript
+  - Axios
+  - CSS3
 
-## License
-
-[MIT](https://choosealicense.com/licenses/mit/) 
+- Backend:
+  - Node.js
+  - Express
+  - MongoDB/Mongoose
+  - TypeScript
+  - CORS 
