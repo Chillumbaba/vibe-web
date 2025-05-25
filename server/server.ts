@@ -36,12 +36,20 @@ app.use('/api/users', userRouter);
 app.use('/api/habits', habitRouter);
 
 // Serve static files from the React app
-app.use(express.static(path.join(__dirname, '../vibe-web/client/build')));
+const clientBuildPath = path.resolve(__dirname, '../../vibe-web/client/build');
+app.use(express.static(clientBuildPath));
+console.log('Serving static files from:', clientBuildPath);
 
 // The "catchall" handler: for any request that doesn't
 // match one above, send back React's index.html file.
 app.get('*', (req: Request, res: Response) => {
-  res.sendFile(path.join(__dirname, '../vibe-web/client/build/index.html'));
+  const indexPath = path.join(clientBuildPath, 'index.html');
+  console.log('Trying to serve index.html from:', indexPath);
+  if (!require('fs').existsSync(indexPath)) {
+    console.error('index.html not found at:', indexPath);
+    return res.status(404).send('Frontend build not found');
+  }
+  res.sendFile(indexPath);
 });
 
 const PORT = process.env.PORT || 5000;
