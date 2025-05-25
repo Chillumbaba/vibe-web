@@ -3,41 +3,44 @@ services:
     name: vibe-web
     env: node
     buildCommand: |
-      echo "Starting build process..."
-      echo "Current directory: $PWD"
-      echo "Directory contents:"
+      echo "=== Starting build process ==="
+      echo "Initial directory structure:"
+      pwd
       ls -la
       
-      # Clean up any previous builds
-      rm -rf dist
-      
+      echo "\n=== Building client ==="
       # Build the client
-      echo "Building client..."
       cd vibe-web/client
+      echo "In client directory:"
+      pwd
       npm install
-      npm run build
-      echo "Client build complete. Contents of build directory:"
+      CI=false npm run build
+      echo "Client build output:"
       ls -la build
       
-      # Move the client build to where the server expects it
+      echo "\n=== Setting up build directory ==="
+      # Move back to root and create the build directory
       cd ../..
-      mkdir -p client/build
-      cp -r vibe-web/client/build/* client/build/
-      echo "Copied client build. Contents of client/build:"
-      ls -la client/build
+      mkdir -p dist/client
+      echo "Copying client build to dist/client..."
+      cp -r vibe-web/client/build/* dist/client/
+      echo "Copied client build. Contents of dist/client:"
+      ls -la dist/client
       
+      echo "\n=== Building server ==="
       # Build the server
-      echo "Building server..."
       npm install
       npm run build
-      echo "Server build complete. Contents of dist directory:"
+      echo "Server build output:"
       ls -la dist
       
-      # Show final directory structure
-      echo "Final directory structure at root:"
+      echo "\n=== Final directory structure ==="
+      pwd
       ls -la
-      echo "Verifying client build location:"
-      ls -la client/build || echo "client/build not found"
+      echo "\nContents of dist directory:"
+      ls -la dist
+      echo "\nContents of dist/client directory:"
+      ls -la dist/client || echo "dist/client not found"
     startCommand: npm start
     envVars:
       - key: NODE_ENV

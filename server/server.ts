@@ -43,54 +43,41 @@ console.log('__dirname:', __dirname);
 
 // In production, serve static files from the React app
 if (process.env.NODE_ENV === 'production') {
-  // Try multiple possible locations for the client build
-  const possibleBuildPaths = [
-    path.join(process.cwd(), 'client/build'),
-    path.join(process.cwd(), 'vibe-web/client/build'),
-    path.join(__dirname, '../client/build'),
-    path.join(__dirname, '../vibe-web/client/build')
-  ];
-
-  console.log('Checking possible build paths:');
-  possibleBuildPaths.forEach(path => console.log('- ' + path));
-
-  // Find the first valid build path
-  const clientBuildPath = possibleBuildPaths.find(p => {
-    const exists = fs.existsSync(p);
-    console.log(`${p} exists: ${exists}`);
-    return exists;
-  });
-
-  if (clientBuildPath) {
-    console.log('Found client build at:', clientBuildPath);
-    app.use(express.static(clientBuildPath));
-
-    // List the contents of the build directory
+  // The client build should be in the dist/client directory
+  const clientBuildPath = path.join(__dirname, 'client');
+  
+  console.log('Looking for client build at:', clientBuildPath);
+  
+  if (fs.existsSync(clientBuildPath)) {
+    console.log('Found client build directory');
+    console.log('Contents of client build directory:');
     try {
-      console.log('Contents of build directory:');
       const files = fs.readdirSync(clientBuildPath);
       console.log(files);
-    } catch (error) {
-      console.error('Error listing build directory:', error);
-    }
-
-    // Serve index.html for all non-API routes
-    app.get('*', (req: Request, res: Response) => {
-      if (!req.path.startsWith('/api')) {
-        const indexPath = path.join(clientBuildPath, 'index.html');
-        if (fs.existsSync(indexPath)) {
-          res.sendFile(indexPath);
-        } else {
-          console.error('index.html not found in build directory');
-          res.status(404).send('Frontend not found');
+      
+      // Serve static files
+      app.use(express.static(clientBuildPath));
+      
+      // Serve index.html for all non-API routes
+      app.get('*', (req: Request, res: Response) => {
+        if (!req.path.startsWith('/api')) {
+          const indexPath = path.join(clientBuildPath, 'index.html');
+          if (fs.existsSync(indexPath)) {
+            res.sendFile(indexPath);
+          } else {
+            console.error('index.html not found in', clientBuildPath);
+            res.status(404).send('Frontend not found');
+          }
         }
-      }
-    });
+      });
+    } catch (error) {
+      console.error('Error reading client build directory:', error);
+    }
   } else {
-    console.error('No valid client build directory found');
+    console.error('Client build directory not found at:', clientBuildPath);
     app.get('*', (req: Request, res: Response) => {
       if (!req.path.startsWith('/api')) {
-        res.status(404).send('Frontend not found. Build directory not found in any of the expected locations.');
+        res.status(404).send('Frontend not found. Build directory not found.');
       }
     });
   }
