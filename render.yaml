@@ -3,23 +3,24 @@ services:
     name: vibe-web
     env: node
     buildCommand: |
-      echo "=== Installing dependencies ==="
+      echo "=== Installing root dependencies ==="
       npm install
       
-      echo "=== Building client ==="
+      echo "=== Installing and building client ==="
       cd vibe-web/client
       npm install
-      CI=false npm run build
+      CI=false react-scripts build
       cd ../..
       
       echo "=== Preparing client build ==="
-      # Create the dist directory if it doesn't exist
       mkdir -p dist/public
-      # Copy the client build to where the server expects it
       cp -r vibe-web/client/build/* dist/public/
       
       echo "=== Building server ==="
-      npm run build:server
+      cd server
+      npm install
+      tsc
+      cd ..
       
       echo "=== Final build structure ==="
       echo "Contents of dist:"

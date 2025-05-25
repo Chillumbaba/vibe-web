@@ -3,8 +3,8 @@
   "version": "1.0.0",
   "description": "Vibe Web Application",
   "scripts": {
-    "build:client": "cd vibe-web/client && npm install && npm run build",
-    "build:server": "tsc",
+    "build:client": "cd vibe-web/client && npm install && react-scripts build",
+    "build:server": "cd server && tsc",
     "build": "npm run build:client && npm run build:server",
     "start": "node dist/server.js",
     "dev": "ts-node-dev --respawn --transpile-only server/server.ts"

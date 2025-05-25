@@ -43,7 +43,8 @@ console.log('__dirname:', __dirname);
 
 // In production, serve static files from the React app
 if (process.env.NODE_ENV === 'production') {
-  const publicPath = path.join(__dirname, 'public');
+  // Look for static files in the dist/public directory (one level up from server build output)
+  const publicPath = path.join(__dirname, '..', 'public');
   console.log('Looking for static files in:', publicPath);
 
   if (fs.existsSync(publicPath)) {
