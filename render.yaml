@@ -1,8 +1,11 @@
 services:
   - type: web
-    name: vibe-web-server
+    name: vibe-web
     env: node
-    buildCommand: npm install && npm run build
+    buildCommand: |
+      npm install
+      cd vibe-web/client && npm install && npm run build && cd ../..
+      npm run build
     startCommand: npm start
     envVars:
       - key: NODE_ENV

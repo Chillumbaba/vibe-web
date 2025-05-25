@@ -2,6 +2,7 @@ import express, { Request, Response } from 'express';
 import mongoose from 'mongoose';
 import cors from 'cors';
 import dotenv from 'dotenv';
+import path from 'path';
 import { userRouter } from './src/routes/userRoutes';
 import { habitRouter } from './src/routes/habitRoutes';
 
@@ -30,14 +31,19 @@ mongoose.connect(MONGODB_URI)
     process.exit(1);
   });
 
-// Basic route for testing
-app.get('/', (req: Request, res: Response) => {
-  res.json({ message: 'Welcome to Vibe Web API' });
-});
+// API Routes
+app.use('/api/users', userRouter);
+app.use('/api/habits', habitRouter);
 
-// Routes
-app.use('/users', userRouter);
-app.use('/habits', habitRouter);
+// Remove the welcome message route since we're serving the frontend
+// Serve static files from the React app
+app.use(express.static(path.join(__dirname, '../vibe-web/client/build')));
+
+// The "catchall" handler: for any request that doesn't
+// match one above, send back React's index.html file.
+app.get('*', (req: Request, res: Response) => {
+  res.sendFile(path.join(__dirname, '../vibe-web/client/build/index.html'));
+});
 
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {
