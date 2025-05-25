@@ -2,6 +2,8 @@ import express, { Request, Response } from 'express';
 import mongoose from 'mongoose';
 import cors from 'cors';
 import dotenv from 'dotenv';
+import { userRouter } from './src/routes/userRoutes';
+import { habitRouter } from './src/routes/habitRoutes';
 
 dotenv.config();
 
@@ -32,6 +34,10 @@ mongoose.connect(MONGODB_URI)
 app.get('/', (req: Request, res: Response) => {
   res.json({ message: 'Welcome to Vibe Web API' });
 });
+
+// Routes
+app.use('/users', userRouter);
+app.use('/habits', habitRouter);
 
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {
