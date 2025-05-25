@@ -3,6 +3,7 @@ import mongoose from 'mongoose';
 import cors from 'cors';
 import dotenv from 'dotenv';
 import path from 'path';
+import fs from 'fs';
 import { userRouter } from './src/routes/userRoutes';
 import { habitRouter } from './src/routes/habitRoutes';
 
@@ -35,48 +36,46 @@ mongoose.connect(MONGODB_URI)
 app.use('/api/users', userRouter);
 app.use('/api/habits', habitRouter);
 
-// Determine the client build path based on the environment
-const isProduction = process.env.NODE_ENV === 'production';
+// Debug information
 console.log('Environment:', process.env.NODE_ENV);
 console.log('Current directory:', process.cwd());
 console.log('__dirname:', __dirname);
 
-let clientBuildPath;
-if (isProduction) {
-  // In production (Render), the client build will be in the dist directory
-  clientBuildPath = path.resolve(__dirname, '../client/build');
-} else {
-  // In development, use the path relative to the server directory
-  clientBuildPath = path.resolve(__dirname, '../../vibe-web/client/build');
-}
-
-console.log('Client build path:', clientBuildPath);
-
-// Serve static files from the React app
-app.use(express.static(clientBuildPath));
-
-// The "catchall" handler: for any request that doesn't
-// match one above, send back React's index.html file.
-app.get('*', (req: Request, res: Response) => {
-  const indexPath = path.join(clientBuildPath, 'index.html');
-  console.log('Trying to serve index.html from:', indexPath);
+// In production, serve static files from the React app
+if (process.env.NODE_ENV === 'production') {
+  const clientBuildPath = path.join(process.cwd(), 'vibe-web/client/build');
+  console.log('Looking for client build at:', clientBuildPath);
   
-  try {
-    if (!require('fs').existsSync(indexPath)) {
-      console.error('index.html not found at:', indexPath);
-      // List the contents of the parent directory to help debug
-      const parentDir = path.dirname(indexPath);
+  // Check if the build directory exists
+  if (fs.existsSync(clientBuildPath)) {
+    console.log('Client build directory found');
+    app.use(express.static(clientBuildPath));
+    
+    // Serve index.html for all non-API routes
+    app.get('*', (req: Request, res: Response) => {
+      if (!req.path.startsWith('/api')) {
+        const indexPath = path.join(clientBuildPath, 'index.html');
+        if (fs.existsSync(indexPath)) {
+          res.sendFile(indexPath);
+        } else {
+          console.error('index.html not found in build directory');
+          res.status(404).send('Frontend not found');
+        }
+      }
+    });
+  } else {
+    console.error('Client build directory not found at:', clientBuildPath);
+    // List parent directory contents for debugging
+    try {
+      const parentDir = path.dirname(clientBuildPath);
       console.log('Contents of', parentDir + ':');
-      const files = require('fs').readdirSync(parentDir);
+      const files = fs.readdirSync(parentDir);
       console.log(files);
-      return res.status(404).send('Frontend build not found');
+    } catch (error) {
+      console.error('Error listing parent directory:', error);
     }
-    res.sendFile(indexPath);
-  } catch (error) {
-    console.error('Error serving index.html:', error);
-    res.status(500).send('Error serving frontend');
   }
-});
+}
 
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {

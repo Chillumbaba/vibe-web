@@ -3,24 +3,33 @@ services:
     name: vibe-web
     env: node
     buildCommand: |
+      echo "Starting build process..."
       echo "Current directory: $PWD"
+      
+      # Clean up any previous builds
+      rm -rf dist
+      
       # Build the client
-      cd vibe-web/client && npm install && npm run build
-      echo "Client build complete"
-      ls -la build
-      
-      # Copy client build to the location server expects
-      mkdir -p ../../client
-      cp -r build ../../client/
-      cd ../..
-      echo "Copied client build to ./client/build"
-      ls -la client/build
-      
-      # Build the server
+      echo "Building client..."
+      cd vibe-web/client
       npm install
       npm run build
-      echo "Server build complete"
+      echo "Client build complete. Contents of build directory:"
+      ls -la build
+      cd ../..
+      
+      # Build the server
+      echo "Building server..."
+      npm install
+      npm run build
+      echo "Server build complete. Contents of dist directory:"
       ls -la dist
+      
+      # Verify the final structure
+      echo "Final directory structure:"
+      ls -la
+      echo "vibe-web/client/build contents:"
+      ls -la vibe-web/client/build
     startCommand: npm start
     envVars:
       - key: NODE_ENV
